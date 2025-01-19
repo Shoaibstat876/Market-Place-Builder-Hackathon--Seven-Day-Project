@@ -1,11 +1,11 @@
+// src/app/pages-menu/page.tsx
 import React from "react";
 import Link from "next/link";
-import Layout from "@/components/layout/Layout";
 import { FiPhone, FiHelpCircle, FiFileText } from "react-icons/fi"; // Importing icons
 
 const PagesMenu = () => {
   return (
-    <Layout>
+    <>
       <section className="container mx-auto px-6 py-16 text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-10">
           Explore More Pages
@@ -20,7 +20,9 @@ const PagesMenu = () => {
             <div className="flex items-center justify-center space-x-4">
               <FiPhone className="text-teal-500 text-2xl" />
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">Contact Us</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Contact Us
+                </h2>
                 <p className="text-gray-600 mt-2">
                   Reach out to us for assistance and inquiries.
                 </p>
@@ -38,7 +40,9 @@ const PagesMenu = () => {
               <FiHelpCircle className="text-teal-500 text-2xl" />
               <div>
                 <h2 className="text-xl font-semibold text-gray-800">FAQs</h2>
-                <p className="text-gray-600 mt-2">Find answers to common questions.</p>
+                <p className="text-gray-600 mt-2">
+                  Find answers to common questions.
+                </p>
               </div>
             </div>
           </Link>
@@ -52,7 +56,9 @@ const PagesMenu = () => {
             <div className="flex items-center justify-center space-x-4">
               <FiFileText className="text-teal-500 text-2xl" />
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">Terms & Conditions</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Terms & Conditions
+                </h2>
                 <p className="text-gray-600 mt-2">
                   Understand our policies and practices.
                 </p>
@@ -61,7 +67,7 @@ const PagesMenu = () => {
           </Link>
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 

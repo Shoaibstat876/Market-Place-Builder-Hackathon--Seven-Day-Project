@@ -1,7 +1,6 @@
-//src\app\products\page.tsx
+// src/app/products/page.tsx
 import React from "react";
 import Image from "next/image";
-import Layout from "@/components/layout/Layout";
 import ProductCard from "@/components/sections/ProductCard";
 
 const products = [
@@ -138,7 +137,7 @@ const products = [
 
 const ProductPage = () => {
   return (
-    <Layout>
+    <>
       {/* Products Section */}
       <section className="py-10">
         <div className="container mx-auto px-6">
@@ -175,28 +174,30 @@ const ProductPage = () => {
       </section>
 
       {/* Instagram Section */}
-<section className="py-10">
-  <div className="container mx-auto px-6 text-center">
-    <h2 className="text-3xl font-bold text-gray-800 mb-6">
-      Follow Products And Discounts On Instagram
-    </h2>
-    <div className="flex justify-center flex-wrap gap-4">
-      {products
-        .filter((product) => [5, 9, 10, 8, 11, 12].includes(product.id))
-        .map((product) => (
-          <div key={product.id} className="relative w-32 h-32">
-            <Image
-              src={product.image}
-              alt={`Instagram post of ${product.name}`}
-              fill
-              className="rounded-md object-cover"
-            />
+      <section className="py-10">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            Follow Products And Discounts On Instagram
+          </h2>
+          <div className="flex justify-center flex-wrap gap-4">
+            {products
+              .filter((product) =>
+                [5, 9, 10, 8, 11, 12].includes(product.id)
+              )
+              .map((product) => (
+                <div key={product.id} className="relative w-32 h-32">
+                  <Image
+                    src={product.image}
+                    alt={`Instagram post of ${product.name}`}
+                    fill
+                    className="rounded-md object-cover"
+                  />
+                </div>
+              ))}
           </div>
-        ))}
-    </div>
-  </div>
-</section>
-    </Layout>
+        </div>
+      </section>
+    </>
   );
 };
 

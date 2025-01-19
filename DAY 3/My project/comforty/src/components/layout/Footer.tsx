@@ -20,19 +20,19 @@ const Footer: React.FC = () => {
   ];
 
   const categories = [
-    { name: "Sofa", href: "/cart" },
-    { name: "Armchair", href: "/cart" },
-    { name: "Wing Chair", href: "/cart" },
-    { name: "Desk Chair", href: "/cart" },
-    { name: "Wooden Chair", href: "/cart" },
-    { name: "Park Bench", href: "/cart" },
+    { name: "Sofa", href: "/products" },
+    { name: "Armchair", href: "/products" },
+    { name: "Wing Chair", href: "/products" },
+    { name: "Desk Chair", href: "/products" },
+    { name: "Wooden Chair", href: "/products" },
+    { name: "Park Bench", href: "/products" },
   ];
 
   const supportLinks = [
     { name: "Help & Support", href: "/help-support" },
     { name: "Terms & Conditions", href: "/terms" },
     { name: "Privacy Policy", href: "/privacy" },
-    { name: "FAQs", href: "/faqs" },
+    { name: "FAQs", href: "/faq" },
   ];
 
   return (

@@ -1,83 +1,66 @@
-import { defineField, defineType } from 'sanity';
+import { defineType } from "sanity";
 
-export default defineType({
-  name: 'product',
-  title: 'Product',
-  type: 'document',
+export const productSchema = defineType({
+  name: "products",
+  title: "Products",
+  type: "document",
   fields: [
-    defineField({
-      name: 'name',
-      title: 'Name',
-      type: 'string',
-      description: 'The name of the product.',
-      validation: (Rule) => Rule.required().min(3).max(100),
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'name',
-        maxLength: 96,
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'text',
-      description: 'A detailed description of the product.',
-      validation: (Rule) => Rule.required().min(10).max(500),
-    }),
-    defineField({
-      name: 'price',
-      title: 'Price',
-      type: 'number',
-      description: 'The price of the product in USD.',
-      validation: (Rule) => Rule.required().positive().max(10000),
-    }),
-    defineField({
-      name: 'image',
-      title: 'Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'reference',
-      to: [{ type: 'category' }],
-      description: 'The category this product belongs to.',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'createdAt',
-      title: 'Created At',
-      type: 'datetime',
-      options: {
-        dateFormat: 'YYYY-MM-DD',
-        timeFormat: 'HH:mm',
-      },
-      readOnly: true,
-    }),
-    defineField({
-      name: 'updatedAt',
-      title: 'Updated At',
-      type: 'datetime',
-      options: {
-        dateFormat: 'YYYY-MM-DD',
-        timeFormat: 'HH:mm',
-      },
-      readOnly: true,
-    }),
-  ],
-  preview: {
-    select: {
-      title: 'name',
-      media: 'image',
+    {
+      name: "title",
+      title: "Product Title",
+      type: "string",
     },
-  },
+    {
+      name: "price",
+      title: "Price",
+      type: "number",
+    },
+    {
+      title: "Price without Discount",
+      name: "priceWithoutDiscount",
+      type: "number",
+    },
+    {
+      name: "badge",
+      title: "Badge",
+      type: "string",
+    },
+    {
+      name: "image",
+      title: "Product Image",
+      type: "image",
+    },
+    {
+      name: "category",
+      title: "Category",
+      type: "reference",
+      to: [{ type: "categories" }],
+    },
+    {
+      name: "description",
+      title: "Product Description",
+      type: "text",
+    },
+    {
+      name: "inventory",
+      title: "Inventory Management",
+      type: "number",
+    },
+    {
+      name: "tags",
+      title: "Tags",
+      type: "array",
+      of: [{ type: "string" }],
+      options: {
+        list: [
+          { title: "Featured", value: "featured" },
+          {
+            title: "Follow products and discounts on Instagram",
+            value: "instagram",
+          },
+          { title: "Gallery", value: "gallery" },
+        ],
+      },
+    },
+  ],
 });

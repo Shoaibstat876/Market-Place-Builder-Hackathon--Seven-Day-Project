@@ -1,6 +1,6 @@
+// src/app/about/page.tsx
 import React from "react";
 import Image from "next/image";
-import Layout from "@/components/layout/Layout";
 import { FaShippingFast, FaCheckCircle } from "react-icons/fa";
 import Link from "next/link"; // Import Link component
 
@@ -80,7 +80,7 @@ const products = [
 
 const AboutPage = () => {
   return (
-    <Layout>
+    <>
       {/* About Us Section */}
       <section className="py-16">
         <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -153,9 +153,8 @@ const AboutPage = () => {
                     <Image
                       src={product.image}
                       alt={product.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-md"
+                      fill
+                      className="rounded-md object-cover"
                     />
                   </div>
                   <h3 className="mt-4 text-lg font-semibold text-gray-800">{product.name}</h3>
@@ -166,7 +165,7 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 
