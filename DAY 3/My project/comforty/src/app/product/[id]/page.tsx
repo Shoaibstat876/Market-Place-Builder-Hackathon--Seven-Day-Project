@@ -71,14 +71,14 @@ const SingleProductPage = () => {
           </div>
         </div>
       </section>
-
+/////////////////////////////////////////////////////////////////////////////////////////////////
       {/* Featured Products Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-800">FEATURED PRODUCTS</h2>
             <Link
-              href="/products"
+              href="/productListingPage"
               className="text-teal-500 hover:underline"
               aria-label="View all products"
             >
