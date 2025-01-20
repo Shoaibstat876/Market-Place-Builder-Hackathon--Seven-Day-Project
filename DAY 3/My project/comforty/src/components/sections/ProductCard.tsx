@@ -1,10 +1,12 @@
-//src\components\sections\ProductCard.tsx
+// src/components/sections/ProductCard.tsx
 "use client";
+
 import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // For programmatic navigation
-import { useCart } from "../../context/CartContext"; // Cart Context for managing cart
-import { PiShoppingCartSimpleLight } from "react-icons/pi"; // Shopping cart icon
+import { useRouter } from "next/navigation";
+import { PiShoppingCartSimpleLight } from "react-icons/pi";
+import { useCart } from "../../context/CartContext";
+import Link from "next/link";
 
 interface Product {
   id: number;
@@ -24,21 +26,24 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart } = useCart(); // Access Cart Context
-  const router = useRouter(); // For navigation
+  const { addToCart } = useCart();
+  const router = useRouter();
 
   const handleAddToCart = () => {
-    // Add product to cart
     addToCart({
       id: product.id,
       name: product.name,
-      price: parseFloat(product.price.replace("$", "")), // Ensure price is a number
+      price: parseFloat(product.price.replace("$", "")) || 0, // Ensure price is numeric
       image: product.image,
-      quantity: 1, // Default quantity is 1
+      quantity: 1,
     });
-
-    // Redirect to cart page after adding
     router.push("/cart");
+  };
+
+  const formatPrice = (value: string): string => {
+    if (!value) return "N/A"; // Handle undefined or null price
+    const numericValue = parseFloat(value.replace("$", ""));
+    return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
   };
 
   return (
@@ -63,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
       </div>
 
-      {/* Product Details */}
+      {/* Product Details Section */}
       <div className="flex flex-col mt-auto">
         <h3 className={`${product.nameStyle} text-lg font-medium mt-4`}>
           {product.name}
@@ -73,29 +78,34 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className={`${product.priceStyle} text-gray-700 font-[400]`}>
             {product.originalPrice ? (
               <>
-                <span>{product.price}</span>
+                <span>{formatPrice(product.price)}</span>
                 <span className="ml-2 line-through text-gray-400">
-                  {product.originalPrice}
+                  {formatPrice(product.originalPrice)}
                 </span>
               </>
             ) : (
-              product.price
+              formatPrice(product.price)
             )}
           </p>
 
           {/* Cart Button */}
           <button
-            onClick={handleAddToCart} // Handle adding product to cart
+            onClick={handleAddToCart}
             className={`${product.cartColor} p-2 rounded-md transition-transform transform hover:scale-110`}
             aria-label={`Add ${product.name} to Cart`}
           >
-            <PiShoppingCartSimpleLight
-              size={22}
-              className={product.iconColor}
-            />
+            <PiShoppingCartSimpleLight size={22} className={product.iconColor} />
           </button>
         </div>
       </div>
+
+      {/* View Details Button */}
+      <Link
+        href={`/product/${product.id}`}
+        className="mt-4 text-white bg-teal-500 px-4 py-2 rounded-md hover:bg-teal-600 text-center"
+      >
+        View Details
+      </Link>
     </div>
   );
 };

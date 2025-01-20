@@ -1,7 +1,6 @@
 // src/app/api/products/[id]/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-// Mock data to simulate product details
 const products = [
   {
     id: 1,
@@ -30,10 +29,8 @@ const products = [
       "A sleek and modern sofa that brings a contemporary touch to your living room.",
     quantity: 1,
   },
-  // Add more products here as needed
 ];
 
-// Mock data for featured products
 const featuredProducts = [
   { id: 2, image: "/assets/images/Image-1.png", name: "Modern Armchair", price: 99 },
   { id: 3, image: "/assets/images/Image-5.png", name: "Sleek Sofa", price: 199 },
@@ -44,14 +41,15 @@ const featuredProducts = [
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const id = url.pathname.split("/").pop(); // Extract product id from URL path
+  const id = url.pathname.split("/").pop(); // Extract product ID from URL path
 
+  // Find the product based on the ID
   const product = products.find((prod) => prod.id === Number(id));
 
   if (product) {
     return NextResponse.json({
-      product,          // The details of the requested product
-      featuredProducts, // The featured products related to the current product
+      product,
+      featuredProducts, // Provide related featured products
     });
   } else {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });

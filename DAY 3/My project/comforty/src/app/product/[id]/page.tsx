@@ -8,6 +8,7 @@ import Head from "next/head";
 import Link from "next/link"; // Import Link for navigation
 import { useParams } from "next/navigation"; // Import useParams() for dynamic route params
 
+// Define the types for Product and FeaturedProduct
 type Product = {
   id: string;
   name: string;
@@ -23,6 +24,12 @@ type FeaturedProduct = {
   image: string;
 };
 
+// Define the expected response type
+type ProductResponse = {
+  product: Product;
+  featuredProducts: FeaturedProduct[];
+};
+
 const SingleProductPage = () => {
   const { addToCart } = useCart();
   const router = useRouter();
@@ -36,19 +43,25 @@ const SingleProductPage = () => {
     if (id) {
       // Fetch product details dynamically using product ID
       fetch(`/api/products/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.product) {
-            setProduct(data.product);
-            setFeaturedProducts(data.featuredProducts);
-          } else {
-            setError("Product not found");
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to fetch product data");
           }
+          return res.json() as Promise<ProductResponse>; // Explicitly assert type here
         })
-        .catch((error) => setError("Error fetching product data"))
+        .then((data) => {
+          setProduct(data.product);
+          setFeaturedProducts(data.featuredProducts);
+        })
+        .catch((error) => {
+          console.error(error);
+          setError("Error fetching product data");
+        })
         .finally(() => setLoading(false)); // Set loading state to false after fetching
     }
   }, [id]);
+  
+  
 
   const handleAddToCart = () => {
     if (product) {

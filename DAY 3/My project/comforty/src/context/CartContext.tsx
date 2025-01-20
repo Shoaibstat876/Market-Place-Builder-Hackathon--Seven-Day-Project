@@ -1,5 +1,6 @@
-//src\context\CartContext.tsx
-"use client"
+// src/context/CartContext.tsx
+"use client";
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface CartItem {
@@ -24,18 +25,29 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Load cart from localStorage when the component mounts
   useEffect(() => {
-    const savedCart = localStorage.getItem("cartItems");
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+    try {
+      const savedCart = localStorage.getItem("cartItems");
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    } catch (error) {
+      console.error("Failed to load cart from localStorage:", error);
     }
   }, []);
 
   // Update localStorage whenever the cartItems state changes
   useEffect(() => {
-    if (cartItems.length > 0) {
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    } else {
-      localStorage.removeItem("cartItems"); // Clear cart from localStorage when it's empty
+    try {
+      if (typeof window !== "undefined") {
+        // Ensure the code runs only in the browser
+        if (cartItems.length > 0) {
+          localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        } else {
+          localStorage.removeItem("cartItems");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save cart to localStorage:", error);
     }
   }, [cartItems]);
 

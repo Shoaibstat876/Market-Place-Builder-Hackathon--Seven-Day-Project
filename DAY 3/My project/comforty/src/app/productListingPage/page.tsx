@@ -7,8 +7,21 @@ import ProductCard from "../../components/sections/ProductCard"; // Import the P
 
 const PAGE_SIZE = 20;
 
+// Define the type for a product
+type Product = {
+  _id: string; // Assuming _id is a string, if not, change accordingly
+  title: string;
+  price: number;
+  imageUrl: string;
+  badge?: string;
+  priceWithoutDiscount?: number;
+};
+
+// Define the type for the response from the fetch call
+type ProductPageResponse = Product[];
+
 const ProductListingPage: React.FC = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]); // Correctly typed state for products
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const { addToCart } = useCart();
@@ -21,7 +34,9 @@ const ProductListingPage: React.FC = () => {
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
-      const data = await response.json();
+
+      // Explicitly define the expected type using type assertion
+      const data = await response.json() as ProductPageResponse; // Assert the type here
       setProducts((prev) => [...prev, ...data]);
       setHasMore(data.length === PAGE_SIZE); // Check if we have more products
     } catch (error) {
@@ -39,8 +54,16 @@ const ProductListingPage: React.FC = () => {
     }
   };
 
-  const handleAddToCart = (product: any) => {
-    addToCart({ ...product, quantity: 1 });
+  const handleAddToCart = (product: Product) => {
+    // Convert _id to a number if CartItem expects number for id
+    const cartItem = {
+      id: parseInt(product._id), // Convert _id to number (or update CartItem to accept string)
+      name: product.title,
+      price: product.price,
+      image: product.imageUrl,
+      quantity: 1,
+    };
+    addToCart(cartItem);
     router.push("/cart");
   };
 
@@ -51,12 +74,12 @@ const ProductListingPage: React.FC = () => {
         {products.length > 0 ? (
           products.map((product, index) => (
             <div
-              key={`${product._id}-${product.title}-${product.price}-${index}`}  // Unique key using id, title, price, and index
+              key={`${product._id}-${product.title}-${product.price}-${index}`}  // Unique key using _id, title, price, and index
               className="relative min-w-[200px] transition-transform duration-300 transform hover:scale-105 hover:shadow-lg snap-center"
             >
               <ProductCard
                 product={{
-                  id: product._id,
+                  id: parseInt(product._id), // Ensure it's passed correctly as a number
                   image: product.imageUrl,
                   name: product.title,
                   price: `$${product.price}`,
