@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "../../context/CartContext";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation"; // Removed as not used
 import ProductCard from "../../components/sections/ProductCard";
 
 const PAGE_SIZE = 20;
@@ -23,8 +23,7 @@ const ProductListingPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const { addToCart } = useCart();
-  const router = useRouter();
+  const { /* addToCart */ } = useCart(); // 'addToCart' removed for now
 
   const fetchProducts = useCallback(async () => {
     if (isLoading) return;
@@ -37,10 +36,10 @@ const ProductListingPage: React.FC = () => {
       }
 
       const data = (await response.json()) as ProductPageResponse;
-      
-      setProductMap(prevMap => {
+
+      setProductMap((prevMap) => {
         const newMap = new Map(prevMap);
-        data.forEach(product => {
+        data.forEach((product) => {
           if (!newMap.has(product._id)) {
             newMap.set(product._id, product);
           }
@@ -54,7 +53,7 @@ const ProductListingPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page]);
+  }, [page, isLoading]); // Added 'isLoading' to dependencies
 
   useEffect(() => {
     fetchProducts();
@@ -62,7 +61,7 @@ const ProductListingPage: React.FC = () => {
 
   const loadMore = () => {
     if (hasMore && !isLoading) {
-      setPage(prev => prev + 1);
+      setPage((prev) => prev + 1);
     }
   };
 
@@ -75,9 +74,9 @@ const ProductListingPage: React.FC = () => {
         {products.length > 0 ? (
           products.map((product) => (
             <ProductCard
-              key={product._id} // Simplified key - no need for page number since we ensure uniqueness
+              key={product._id}
               product={{
-                id: parseInt(product._id.replace(/[^0-9]/g, '')) || Math.floor(Math.random() * 1000000),
+                id: parseInt(product._id.replace(/[^0-9]/g, "")) || Math.floor(Math.random() * 1000000),
                 image: product.imageUrl || "/default-placeholder.png",
                 name: product.title,
                 price: `$${product.price}`,

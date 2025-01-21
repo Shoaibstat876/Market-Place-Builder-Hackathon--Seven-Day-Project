@@ -138,20 +138,14 @@ const products = [
 ];
 
 const ProductPage = () => {
-  // Define the number of products per page and current page
   const productsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Calculate the index of the first and last products for the current page
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
-  // Create page numbers dynamically based on total number of products
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / productsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const totalPages = Math.ceil(products.length / productsPerPage);
 
   return (
     <>
@@ -172,11 +166,13 @@ const ProductPage = () => {
         <div className="container mx-auto px-6 flex justify-center">
           <nav aria-label="Pagination">
             <ul className="flex space-x-2">
-              {pageNumbers.map((number) => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
                 <li key={number}>
                   <button
                     onClick={() => setCurrentPage(number)}
-                    className={`px-4 py-2 ${currentPage === number ? 'bg-teal-600' : 'bg-teal-500'} text-white rounded hover:bg-teal-600`}
+                    className={`px-4 py-2 ${
+                      currentPage === number ? "bg-teal-600" : "bg-teal-500"
+                    } text-white rounded hover:bg-teal-600`}
                   >
                     {number}
                   </button>
@@ -190,7 +186,9 @@ const ProductPage = () => {
       {/* Newsletter Section */}
       <section className="py-10 bg-gray-100">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Subscribe to Our Newsletter</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Subscribe to Our Newsletter
+          </h2>
           <form className="flex items-center justify-center">
             <input
               type="email"
@@ -211,10 +209,14 @@ const ProductPage = () => {
       {/* Instagram Section */}
       <section className="py-10">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">Follow Products And Discounts On Instagram</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            Follow Products And Discounts On Instagram
+          </h2>
           <div className="flex justify-center flex-wrap gap-4">
             {products
-              .filter((product) => [5, 9, 10, 8, 11, 12].includes(product.id))
+              .filter((product) =>
+                [5, 9, 10, 8, 11, 12].includes(product.id)
+              )
               .map((product) => (
                 <div key={product.id} className="relative w-32 h-32">
                   <Image
