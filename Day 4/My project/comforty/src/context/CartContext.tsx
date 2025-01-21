@@ -38,13 +38,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Update localStorage whenever the cartItems state changes
   useEffect(() => {
     try {
-      if (typeof window !== "undefined") {
-        // Ensure the code runs only in the browser
-        if (cartItems.length > 0) {
-          localStorage.setItem("cartItems", JSON.stringify(cartItems));
-        } else {
-          localStorage.removeItem("cartItems");
-        }
+      if (cartItems.length > 0) {
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      } else {
+        localStorage.removeItem("cartItems");
       }
     } catch (error) {
       console.error("Failed to save cart to localStorage:", error);
@@ -55,14 +52,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((cartItem) => cartItem.id === item.id);
       if (existingItem) {
-        // If item already exists, increase the quantity
         return prevItems.map((cartItem) =>
           cartItem.id === item.id
             ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
             : cartItem
         );
       }
-      // If item doesn't exist, add it to the cart
       return [...prevItems, item];
     });
   };
@@ -88,4 +83,4 @@ export const useCart = () => {
     throw new Error("useCart must be used within a CartProvider");
   }
   return context;
-};
+}

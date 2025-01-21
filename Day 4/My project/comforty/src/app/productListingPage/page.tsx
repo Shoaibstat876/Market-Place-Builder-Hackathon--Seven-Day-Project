@@ -21,7 +21,7 @@ type Product = {
 type ProductPageResponse = Product[];
 
 const ProductListingPage: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]); // Correctly typed state for products
+  const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const { addToCart } = useCart();
@@ -35,10 +35,9 @@ const ProductListingPage: React.FC = () => {
         throw new Error("Failed to fetch products");
       }
 
-      // Explicitly define the expected type using type assertion
-      const data = await response.json() as ProductPageResponse; // Assert the type here
+      const data = (await response.json()) as ProductPageResponse;
       setProducts((prev) => [...prev, ...data]);
-      setHasMore(data.length === PAGE_SIZE); // Check if we have more products
+      setHasMore(data.length === PAGE_SIZE);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -55,12 +54,11 @@ const ProductListingPage: React.FC = () => {
   };
 
   const handleAddToCart = (product: Product) => {
-    // Convert _id to a number if CartItem expects number for id
     const cartItem = {
-      id: parseInt(product._id), // Convert _id to number (or update CartItem to accept string)
+      id: parseInt(product._id, 10),
       name: product.title,
       price: product.price,
-      image: product.imageUrl,
+      image: product.imageUrl || "/default-placeholder.png",
       quantity: 1,
     };
     addToCart(cartItem);
@@ -70,25 +68,24 @@ const ProductListingPage: React.FC = () => {
   return (
     <div className="container mx-auto py-16">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Our Products</h2>
-      <div className="flex overflow-x-scroll space-x-4 snap-x snap-mandatory">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.length > 0 ? (
-          products.map((product, index) => (
-            <div
-              key={`${product._id}-${product.title}-${product.price}-${index}`}  // Unique key using _id, title, price, and index
-              className="relative min-w-[200px] transition-transform duration-300 transform hover:scale-105 hover:shadow-lg snap-center"
-            >
+          products.map((product) => (
+            <div key={product._id} className="relative">
               <ProductCard
                 product={{
-                  id: parseInt(product._id), // Ensure it's passed correctly as a number
-                  image: product.imageUrl,
+                  id: parseInt(product._id, 10),
+                  image: product.imageUrl || "/default-placeholder.png",
                   name: product.title,
                   price: `$${product.price}`,
                   badge: product.badge,
-                  originalPrice: product.priceWithoutDiscount ? `$${product.priceWithoutDiscount}` : undefined,
+                  originalPrice: product.priceWithoutDiscount
+                    ? `$${product.priceWithoutDiscount}`
+                    : undefined,
                   priceStyle: "text-teal-600 font-semibold",
                   nameStyle: "text-lg font-bold text-gray-800",
                   cartColor: "bg-teal-500",
-                  iconColor: "text-white"
+                  iconColor: "text-white",
                 }}
               />
             </div>

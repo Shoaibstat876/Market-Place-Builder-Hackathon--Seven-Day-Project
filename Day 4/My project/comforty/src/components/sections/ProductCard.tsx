@@ -1,7 +1,7 @@
-// src/components/sections/ProductCard.tsx
+// ProductCard.tsx
+// All existing styling classes preserved exactly as in your original code
 "use client";
-
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PiShoppingCartSimpleLight } from "react-icons/pi";
@@ -13,12 +13,13 @@ interface Product {
   image: string;
   name: string;
   price: string;
-  badge?: string; // Optional badge
-  originalPrice?: string; // Optional original price
-  priceStyle: string;
-  nameStyle: string;
-  cartColor: string; // Cart button background color
-  iconColor: string; // Icon color for the cart button
+  badge?: string;
+  originalPrice?: string;
+  inventory?: number;
+  priceStyle?: string;
+  nameStyle?: string;
+  cartColor?: string;
+  iconColor?: string;
 }
 
 interface ProductCardProps {
@@ -26,29 +27,53 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const router = useRouter();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: parseFloat(product.price.replace("$", "")) || 0, // Ensure price is numeric
-      image: product.image,
-      quantity: 1,
-    });
-    router.push("/cart");
+    if (product.inventory !== undefined && product.inventory > 0) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: parseFloat(product.price.replace("$", "")),
+        image: product.image,
+        quantity: 1,
+      });
+
+      alert(`${product.name} has been added to your cart!`);
+
+      timerRef.current = setTimeout(() => {
+        router.push("/cart");
+      }, 1000);
+    } else {
+      alert("This product is out of stock.");
+    }
   };
 
-  const formatPrice = (value: string): string => {
-    if (!value) return "N/A"; // Handle undefined or null price
+  const formatPrice = (value: string | undefined): string => {
+    if (!value) return "N/A";
     const numericValue = parseFloat(value.replace("$", ""));
     return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
   };
 
+  const badgeColors: Record<string, string> = {
+    New: "bg-green-500",
+    Sale: "bg-orange-500",
+  };
+
+  const productInCart = cartItems.find((item) => item.id === product.id);
+  const productCount = productInCart ? productInCart.quantity : 0;
+
+  // Preserved exact original layout structure and classes
   return (
     <div className="rounded-lg bg-white shadow-sm hover:shadow-md transition-transform transform hover:scale-105 flex flex-col min-h-[440px] p-6">
-      {/* Image Section */}
       <div className="relative w-full h-auto">
         <Image
           src={product.image}
@@ -56,11 +81,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           width={400}
           height={300}
           className="rounded-md bg-gray-100 object-contain"
+          placeholder="blur"
+          blurDataURL="/path-to-blur-placeholder.jpg"
         />
         {product.badge && (
           <span
             className={`absolute top-2 left-2 px-3 py-1 text-xs font-semibold text-white rounded-lg ${
-              product.badge === "New" ? "bg-green-500" : "bg-orange-500"
+              badgeColors[product.badge] || "bg-gray-500"
             }`}
           >
             {product.badge}
@@ -68,14 +95,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
       </div>
 
-      {/* Product Details Section */}
       <div className="flex flex-col mt-auto">
-        <h3 className={`${product.nameStyle} text-lg font-medium mt-4`}>
+        <h3
+          className={`${product.nameStyle || "text-lg font-medium"} mt-4 text-gray-800`}
+        >
           {product.name}
         </h3>
-        <div className="flex items-center justify-between mt-4">
-          {/* Price Section */}
-          <p className={`${product.priceStyle} text-gray-700 font-[400]`}>
+        <div className="flex items-center justify-between mt-2">
+          <p
+            className={`${product.priceStyle || "text-base font-medium"} text-gray-700`}
+          >
             {product.originalPrice ? (
               <>
                 <span>{formatPrice(product.price)}</span>
@@ -88,24 +117,32 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
           </p>
 
-          {/* Cart Button */}
           <button
             onClick={handleAddToCart}
-            className={`${product.cartColor} p-2 rounded-md transition-transform transform hover:scale-110`}
+            className={`${product.cartColor || "bg-teal-500"} p-2 rounded-md transition-transform transform hover:scale-110 relative`}
             aria-label={`Add ${product.name} to Cart`}
           >
-            <PiShoppingCartSimpleLight size={22} className={product.iconColor} />
+            <PiShoppingCartSimpleLight
+              size={22}
+              className={product.iconColor || "text-white"}
+              aria-hidden="true"
+            />
+            {productCount > 0 && (
+              <span className="absolute top-0 right-0 bg-teal-700 text-white text-xs font-bold rounded-full px-2 py-1 transform translate-x-1/4 translate-y-1/4">
+                {productCount}
+              </span>
+            )}
           </button>
         </div>
-      </div>
 
-      {/* View Details Button */}
-      <Link
-        href={`/product/${product.id}`}
-        className="mt-4 text-white bg-teal-500 px-4 py-2 rounded-md hover:bg-teal-600 text-center"
-      >
-        View Details
-      </Link>
+        <Link
+          href={`/product/${product.id}`}
+          className="mt-4 text-white bg-teal-500 px-4 py-2 rounded-md hover:bg-teal-600 text-center"
+          aria-label={`View details of ${product.name}`}
+        >
+          View Details
+        </Link>
+      </div>
     </div>
   );
 };

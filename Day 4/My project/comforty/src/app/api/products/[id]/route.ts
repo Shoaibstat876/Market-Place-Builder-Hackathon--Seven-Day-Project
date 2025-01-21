@@ -1,36 +1,35 @@
-// src/app/api/products/[id]/route.ts
-import { NextResponse } from 'next/server';
+// src/app/api/products/route.ts
+import { NextResponse } from "next/server";
 
+// Define the products data
 const products = [
   {
     id: 1,
-    image: "/assets/images/Image-6.png",
     name: "Library Stool Chair",
     price: 20.0,
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tincidunt erat enim, consectetur adipiscing.",
-    quantity: 1,
+    image: "/assets/images/Image-6.png",
+    description: "A sturdy and stylish stool chair for your library.",
+    inventory: 10,
   },
   {
     id: 2,
-    image: "/assets/images/Image-1.png",
     name: "Modern Armchair",
     price: 99.0,
-    description:
-      "A comfortable and stylish armchair perfect for any living space.",
-    quantity: 1,
+    image: "/assets/images/Image-1.png",
+    description: "A comfortable and modern armchair for your living space.",
+    inventory: 5,
   },
   {
     id: 3,
-    image: "/assets/images/Image-5.png",
     name: "Sleek Sofa",
     price: 199.0,
-    description:
-      "A sleek and modern sofa that brings a contemporary touch to your living room.",
-    quantity: 1,
+    image: "/assets/images/Image-5.png",
+    description: "A sleek and modern sofa for your living room.",
+    inventory: 3,
   },
 ];
 
+// Define featured products (could be dynamically updated or fetched from a DB)
 const featuredProducts = [
   { id: 2, image: "/assets/images/Image-1.png", name: "Modern Armchair", price: 99 },
   { id: 3, image: "/assets/images/Image-5.png", name: "Sleek Sofa", price: 199 },
@@ -41,17 +40,25 @@ const featuredProducts = [
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const id = url.pathname.split("/").pop(); // Extract product ID from URL path
+  const id = parseInt(url.pathname.split("/").pop() || "0");
 
-  // Find the product based on the ID
-  const product = products.find((prod) => prod.id === Number(id));
+  // If an ID is provided, return the specific product
+  if (id && !isNaN(id)) {
+    const product = products.find((prod) => prod.id === id);
 
-  if (product) {
-    return NextResponse.json({
-      product,
-      featuredProducts, // Provide related featured products
-    });
-  } else {
-    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    if (product) {
+      return NextResponse.json({
+        product: {
+          ...product,
+          quantityAvailable: product.inventory, // Include inventory details
+        },
+        featuredProducts, // Provide recommendations
+      });
+    } else {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
   }
+
+  // If no ID is provided, return the full list of products
+  return NextResponse.json(products);
 }
