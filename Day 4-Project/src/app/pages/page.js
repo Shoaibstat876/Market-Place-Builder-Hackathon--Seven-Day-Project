@@ -1,4 +1,4 @@
-// src/app/pages-menu/page.tsx
+// src/app/pages-menu/page.js
 import React from "react";
 import Link from "next/link";
 import { FiPhone, FiHelpCircle, FiFileText } from "react-icons/fi"; // Importing icons

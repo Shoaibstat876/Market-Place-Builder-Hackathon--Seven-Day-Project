@@ -10,9 +10,9 @@ interface Product {
   image: string;
   imageUrl?: string;
   name: string;
-  price: string;
+  price: number | string;
   badge?: string;
-  originalPrice?: string;
+  originalPrice?: number | string;
   inventory?: number;
   priceStyle?: string;
   nameStyle?: string;
@@ -30,17 +30,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (product.inventory !== undefined && product.inventory <= 0) {
       alert("This product is out of stock.");
       return;
     }
 
+    const price =
+      typeof product.price === "string"
+        ? parseFloat(product.price.replace("$", ""))
+        : product.price;
+
     const newItem = {
       id: product.id,
       name: product.name,
-      price: parseFloat(product.price.replace("$", "")),
-      image: product.imageUrl || product.image,
+      price: price,
+      image: product.imageUrl?.trim() || product.image.trim(),
       quantity: 1,
     };
 
@@ -48,10 +53,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     alert(`${product.name} has been added to your cart!`);
   };
 
-  const formatPrice = (value: string | undefined): string => {
-    if (!value) return "N/A";
-    const numericValue = parseFloat(value.replace("$", ""));
-    return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
+  // Enhanced price formatting to handle both string and number inputs
+  const formatPrice = (value: string | number | undefined): string => {
+    if (value === undefined) return "N/A";
+    if (typeof value === "string") {
+      const numericValue = parseFloat(value.replace("$", ""));
+      return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
+    }
+    return `$${value.toFixed(2)}`;
   };
 
   const badgeColors: Record<string, string> = {
@@ -62,7 +71,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const productInCart = cartItems.find((item) => item.id === product.id);
   const productCount = productInCart ? productInCart.quantity : 0;
 
-  // Generate stable keys for inner elements
+  // Apply different cart colors for the first product vs. others
+  const isFirstProduct = product.id === 1;
+  const cartButtonClass = isFirstProduct
+    ? "bg-[#029fae] hover:bg-teal-700"
+    : "bg-[#f0f2f3] hover:bg-gray-600";
+
+  const cartIconClass = isFirstProduct ? "text-white" : "text-black";
+
+  // Generate stable keys for performance optimization
   const imageKey = `product-image-${product.id}`;
   const badgeKey = `product-badge-${product.id}`;
   const nameKey = `product-name-${product.id}`;
@@ -71,16 +88,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="rounded-lg bg-white shadow-sm hover:shadow-md transition-transform transform hover:scale-105 flex flex-col min-h-[440px] p-6">
+      {/* Product Image */}
       <div className="relative w-full h-auto">
         <Image
           key={imageKey}
-          src={product.imageUrl || product.image || "/fallback.jpg"}
+          src={product.imageUrl?.trim() || product.image?.trim() || "/fallback.jpg"}
           alt={product.name}
           width={400}
           height={300}
           className="rounded-md bg-gray-100 object-contain"
           placeholder="blur"
-          blurDataURL="/path-to-blur-placeholder.jpg"
+          blurDataURL="/fallback.jpg"
         />
         {product.badge && (
           <span
@@ -94,6 +112,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
       </div>
 
+      {/* Product Details */}
       <div className="flex flex-col mt-auto">
         <h3
           key={nameKey}
@@ -118,15 +137,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
           </p>
 
+          {/* Add to Cart Button */}
           <button
             key={cartKey}
             onClick={handleAddToCart}
-            className={`${product.cartColor || "bg-teal-500"} p-2 rounded-md transition-transform transform hover:scale-110 relative`}
+            className={`${cartButtonClass} p-2 rounded-md transition-transform transform hover:scale-110 relative flex items-center justify-center`}
             aria-label={`Add ${product.name} to Cart`}
           >
             <PiShoppingCartSimpleLight
               size={22}
-              className={product.iconColor || "text-white"}
+              className={`${cartIconClass}`}
               aria-hidden="true"
             />
             {productCount > 0 && (
@@ -137,6 +157,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
         </div>
 
+        {/* View Details Link */}
         <Link
           href={`/product/${product.id}`}
           className="mt-4 text-white bg-teal-500 px-4 py-2 rounded-md hover:bg-teal-600 text-center"

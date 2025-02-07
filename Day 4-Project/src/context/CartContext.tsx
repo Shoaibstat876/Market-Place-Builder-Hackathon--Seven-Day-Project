@@ -1,4 +1,5 @@
-// src/context/CartContext.tsx
+// File: src/context/CartContext.tsx
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
@@ -22,9 +23,15 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isClient, setIsClient] = useState(false); // ✅ Fix: Ensure client-side execution
 
-  // Load cart from localStorage when the component mounts
   useEffect(() => {
+    setIsClient(true); // ✅ Ensures `localStorage` is only used on client side
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return; // ✅ Prevents `localStorage` from running on server
+
     try {
       const savedCart = localStorage.getItem("cartItems");
       if (savedCart) {
@@ -33,10 +40,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error("Failed to load cart from localStorage:", error);
     }
-  }, []);
+  }, [isClient]);
 
-  // Update localStorage whenever the cartItems state changes
   useEffect(() => {
+    if (!isClient) return;
+
     try {
       if (cartItems.length > 0) {
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -46,7 +54,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error("Failed to save cart to localStorage:", error);
     }
-  }, [cartItems]);
+  }, [cartItems, isClient]);
 
   const addToCart = (item: CartItem) => {
     setCartItems((prevItems) => {
@@ -71,7 +79,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, calculateTotal }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        calculateTotal,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
@@ -83,4 +98,4 @@ export const useCart = () => {
     throw new Error("useCart must be used within a CartProvider");
   }
   return context;
-}
+};

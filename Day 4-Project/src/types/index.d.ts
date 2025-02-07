@@ -1,3 +1,4 @@
+//src\types\index.d.ts
 // NOTE: We haven't used this file yet because we are unsure where to integrate it in the project.
 // This file can be used to define global types, interfaces, or type declarations for the project.
 

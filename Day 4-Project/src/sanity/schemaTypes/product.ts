@@ -11,6 +11,15 @@ export const productSchema = defineType({
       type: "string",
     },
     {
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: {
+        source: "title", // Auto-generate from title
+        maxLength: 200,
+      },
+    },
+    {
       name: "price",
       title: "Price",
       type: "number",
@@ -24,11 +33,30 @@ export const productSchema = defineType({
       name: "badge",
       title: "Badge",
       type: "string",
+      options: {
+        list: [
+          { title: "New", value: "New" },
+          { title: "Sale", value: "Sale" },
+          { title: "Trending", value: "Trending" },
+        ],
+        layout: "dropdown",
+      },
     },
     {
       name: "image",
       title: "Product Image",
       type: "image",
+      options: {
+        hotspot: true, // Allows cropping and zooming
+      },
+      fields: [
+        {
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+          description: "A short description of the image for accessibility.",
+        },
+      ],
     },
     {
       name: "category",

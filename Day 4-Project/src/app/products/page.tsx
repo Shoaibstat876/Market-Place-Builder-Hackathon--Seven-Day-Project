@@ -1,151 +1,80 @@
-// src/app/products/page.tsx
-"use client"
-import React, { useState } from "react";
+// File: src/app/product/page.tsx
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ProductCard from "@/components/sections/ProductCard";
-
-// Mocking products data (for demonstration)
-const products = [
-  {
-    id: 1,
-    image: "/assets/images/Image-5.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "New",
-    nameStyle: "text-lg font-[400] text-[#007580]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#029fae] hover:bg-teal-700",
-    iconColor: "text-white",
-  },
-  {
-    id: 2,
-    image: "/assets/images/Image-6.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "Sale",
-    originalPrice: "$30",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 3,
-    image: "/assets/images/Image-8.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    nameStyle: "text-lg font-[400] text-[#000000]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 4,
-    image: "/assets/images/Image-9.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    nameStyle: "text-lg font-[400] text-[#000000]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 5,
-    image: "/assets/images/Image-10.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "New",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 6,
-    image: "/assets/images/Image-11.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "Sale",
-    originalPrice: "$30",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 7,
-    image: "/assets/images/Image-25.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    nameStyle: "text-lg font-[400] text-[#000000]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 8,
-    image: "/assets/images/Image-5.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    nameStyle: "text-lg font-[400] text-[#000000]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 9,
-    image: "/assets/images/Image-3.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "New",
-    nameStyle: "text-lg font-[400] text-[#007580]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#029fae] hover:bg-teal-700",
-    iconColor: "text-white",
-  },
-  {
-    id: 10,
-    image: "/assets/images/Image-6.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "Sale",
-    originalPrice: "$30",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 11,
-    image: "/assets/images/Image-8.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    nameStyle: "text-lg font-[400] text-[#000000]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 12,
-    image: "/assets/images/Image-17.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    nameStyle: "text-lg font-[400] text-[#000000]",
-    priceStyle: "text-[#000000] font-[400]",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-];
+import { fetchAllProducts, Product } from "../../utils/mockProducts";
 
 const ProductPage = () => {
   const productsPerPage = 4;
+  const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>("");
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const fetchedProducts = await fetchAllProducts();
+  
+        // Ensure all properties exist while keeping TypeScript happy
+        const updatedProducts: Product[] = fetchedProducts.map((product) => ({
+          ...product,
+          badge: product.badge || undefined, // Ensures it's string | undefined
+          originalPrice: product.originalPrice ?? undefined, // Ensures number | undefined
+          nameStyle: product.nameStyle || "text-lg font-[400] text-[#000000]",
+          priceStyle: product.priceStyle || "text-[#000000] font-[400]",
+          cartColor: product.cartColor || "bg-[#f0f2f3] hover:bg-gray-600",
+          iconColor: product.iconColor || "text-black",
+        }));
+  
+        setProducts(updatedProducts);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    loadProducts();
+  }, []);
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (email.trim() !== "") {
+      setIsSubmitted(true);
+      setEmail("");
+    }
+  };
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-
   const totalPages = Math.ceil(products.length / productsPerPage);
+
+  if (loading) {
+    return (
+      <div className="py-10 text-center">
+        <p className="text-lg text-gray-500">Loading products...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-10 text-center">
+        <p className="text-lg text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -189,9 +118,11 @@ const ProductPage = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-6">
             Subscribe to Our Newsletter
           </h2>
-          <form className="flex items-center justify-center">
+          <form className="flex items-center justify-center" onSubmit={handleSubmit}>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email..."
               className="px-4 py-2 w-full max-w-sm border rounded-l focus:outline-none"
               aria-label="Email Address"
@@ -203,6 +134,9 @@ const ProductPage = () => {
               Submit
             </button>
           </form>
+          {isSubmitted && (
+            <p className="mt-4 text-xs text-teal-500">Email submitted successfully!</p>
+          )}
         </div>
       </section>
 
@@ -215,8 +149,8 @@ const ProductPage = () => {
           <div className="flex justify-center flex-wrap gap-4">
             {products
               .filter((product) =>
-                [5, 9, 10, 8, 11, 12].includes(product.id)
-              )
+                [5, 9, 10, 8, 11, 12, 3001, 3002, 3003, 3004].includes(product.id)
+              ) // Combined IDs from both versions
               .map((product) => (
                 <div key={product.id} className="relative w-32 h-32">
                   <Image

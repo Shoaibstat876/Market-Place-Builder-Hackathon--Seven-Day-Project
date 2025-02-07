@@ -1,4 +1,5 @@
-// src/app/layout.tsx
+// File: src/app/layout.tsx
+
 import "../styles/globals.css";
 import { CartProvider } from "../context/CartContext";
 import Header from "@/components/layout/Header";

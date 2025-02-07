@@ -1,27 +1,8 @@
+// src/components/sections/TopCategories.tsx
+
 import React from "react";
 import Image from "next/image";
-
-// Array of category data
-const categories = [
-  {
-    id: 1,
-    image: "/assets/images/Image-19.png",
-    name: "Wing Chair",
-    products: "3,648 Products",
-  },
-  {
-    id: 2,
-    image: "/assets/images/Image-18.png",
-    name: "Wooden Chair",
-    products: "157 Products",
-  },
-  {
-    id: 3,
-    image: "/assets/images/Image-17.png",
-    name: "Desk Chair",
-    products: "154 Products",
-  },
-];
+import { mockTopCategories } from "@/utils/mockTopCategories";
 
 const TopCategories: React.FC = () => {
   return (
@@ -34,7 +15,7 @@ const TopCategories: React.FC = () => {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
+          {mockTopCategories.map((category) => (
             <div
               key={category.id}
               aria-label={`Category: ${category.name} with ${category.products}`}
@@ -44,9 +25,9 @@ const TopCategories: React.FC = () => {
               <Image
                 src={category.image}
                 alt={category.name}
-                width={350} // Explicit width
-                height={250} // Explicit height
-                className="object-cover w-full h-auto" // Ensures full width and proper scaling
+                width={350} 
+                height={250}
+                className="object-cover w-full h-auto"
               />
 
               {/* Overlay with Text */}

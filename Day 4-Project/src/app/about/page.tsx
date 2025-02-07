@@ -73,9 +73,9 @@ const features = [
 ];
 
 const products = [
-  { id: 1, image: "/assets/images/sofa-big.png", name: "The Poplar Suede Sofa", price: "$99.00", link: "/product/1" },
-  { id: 2, image: "/assets/images/black-chair.png", name: "The Dandy Chair", price: "$99.00", link: "/product/2" },
-  { id: 3, image: "/assets/images/dark-chair.png", name: "Lonely Chair", price: "$99.00", link: "/product/3" },
+  { id: 1, image: "/assets/images/sofa-big.png", name: "The Poplar Suede Sofa", price: "$129.00", link: "/product/1" },
+  { id: 2, image: "/assets/images/dandy-chair.png", name: "The Dandy Chair", price: "$69.00", link: "/product/2" },
+  { id: 3, image: "/assets/images/arm-chair.png", name: "Arm Chair", price: "$99.00", link: "/product/3" },
 ];
 
 const AboutPage = () => {
@@ -104,7 +104,7 @@ const AboutPage = () => {
           <div>
             <div className="relative aspect-[4/3] w-full max-w-2xl mx-auto hover:scale-105 transition-transform duration-300">
               <Image
-                src="/assets/images/Image-5.png"
+                src="/assets/images/white-chair.png"
                 alt="About Us"
                 className="rounded-lg shadow-lg object-cover"
                 width={800}

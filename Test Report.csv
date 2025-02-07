@@ -1,0 +1,10 @@
+Test Report,,,,,,,,
+,,,,,,,,
+Test Case Report,,,,,,,,
+,,,,,,,,
+Test Case ID,Description,Test Steps,Expected Result,Actual Result,Status,Severity,Assigned To,Remarks
+TC-001,Product Listing Display,Check if products are displayed,Products should appear correctly,Products loaded successfully,Passed,High,Ameen Alam,N/A
+TC-002,Product Search Functionality,Search for a product by name,Correct products should appear,Products matched correctly,Passed,High,Ameen Alam,N/A
+TC-003,Cart Functionality,Add product to cart,Product should be added to cart,Product added to cart successfully,Passed,High,Ameen Alam,N/A
+TC-004,API Error Handling,Simulate network failure,Display error message,Error message displayed correctly,Passed,High,Ameen Alam,N/A
+TC-005,Performance Optimization,Run Lighthouse audit,Performance score above 90,Performance score: 92,Passed,Medium,Ameen Alam,Optimization complete

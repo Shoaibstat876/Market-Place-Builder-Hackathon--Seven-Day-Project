@@ -11,14 +11,29 @@ export const categorySchema = defineType({
             type: 'string',
         },
         {
+            name: 'slug',
+            title: 'Slug',
+            type: 'slug',
+            options: {
+                source: 'title', // Auto-generate from title
+                maxLength: 200,
+            },
+        },
+        {
             name: 'image',
             title: 'Category Image',
             type: 'image',
+            options: {
+                hotspot: true, // Allows cropping and zooming
+            },
+            fields: [
+                {
+                    name: 'alt',
+                    title: 'Alternative Text',
+                    type: 'string',
+                    description: 'A short description of the image for accessibility.',
+                }
+            ]
         },
-        {
-            title: 'Number of Products',
-            name: 'products',
-            type: 'number',
-        }
     ],
 });

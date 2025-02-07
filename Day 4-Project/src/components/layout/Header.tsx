@@ -1,11 +1,13 @@
+// File: src/components/layout/Header.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { PiShoppingCartSimpleLight } from "react-icons/pi";
+import { useCart } from "../../context/CartContext"; // ✅ Import Cart Context
+import CategoryDropdown from "../shared/CategoryDropdown";
 
-// Define the type for product items in search results
 interface Product {
   id: string;
   name: string;
@@ -22,13 +24,24 @@ const Header = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [cartCount, setCartCount] = useState(0);
+
+  // ✅ Get cart items from CartContext
+  const { cartItems } = useCart();
+
+  // ✅ Ensure cart count is updated only on the client to prevent hydration mismatch
+  useEffect(() => {
+    setCartCount(cartItems.reduce((total, item) => total + item.quantity, 0));
+  }, [cartItems]);
 
   const navLinks: NavLink[] = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/products" },
+    { name: "Trend", path: "/trend" }, 
     { name: "About", path: "/about" },
-    { name: "Product", path: "/product/1" },
-    { name: "Pages", path: "/pages" },
+    { name: "Contact", path: "/contact" },
+    { name: "FAQs", path: "/faq" },
+    { name: "Terms & Conditions", path: "/terms" },
   ];
 
   const handleSearch = async (event: React.FormEvent) => {
@@ -47,22 +60,14 @@ const Header = () => {
   return (
     <header>
       {/* Top Bar */}
-      <div className="bg-[#272343] font-[800] text-white text-sm py-2">
+      <div className="bg-[#272343] font-bold text-white text-sm py-2">
         <div className="container mx-auto px-6 flex justify-between items-center">
-          {/* Free Shipping Message */}
-          <div className="flex items-center gap-2">
-            <span aria-hidden="true">✔</span>
-            <p className="text-white font-bold">Free Shipping On All Orders Over $50</p>
-          </div>
-
-          {/* Right Section */}
+          <p className="text-white">✔ Free Shipping On All Orders Over $50</p>
           <div className="hidden sm:flex items-center space-x-6">
-            <button className="cursor-pointer hover:text-gray-300 transition-colors" aria-label="Select Language">
+            <button className="hover:text-gray-300 transition-colors" aria-label="Select Language">
               Eng ▾
             </button>
-            <Link href="/faq" className="hover:underline hover:text-gray-300 transition-colors">
-              FAQs
-            </Link>
+            <Link href="/faq" className="hover:text-gray-300 transition-colors">FAQs</Link>
             <div className="flex items-center gap-2 hover:text-gray-300 transition-colors">
               <div className="bg-white text-purple-900 rounded-full h-6 w-6 flex items-center justify-center" aria-hidden="true">!</div>
               <p>Need Help</p>
@@ -72,73 +77,81 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <div className="bg-gray-100 py-4 shadow-sm">
+      <div className="bg-gray-100 py-5 shadow-sm">
         <div className="container mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-4">
-            <Image src="/assets/images/Logo Icon-1.png" alt="Comforty Logo" width={40} height={40} className="rounded-full" priority />
-            <h1 className="text-2xl font-bold text-black">Comforty</h1>
+            <Image src="/assets/images/Logo Icon-1.png" alt="Comforty Logo" width={50} height={50} className="rounded-full" priority />
+            <h1 className="text-3xl font-bold text-black">Comforty</h1>
           </Link>
 
-          {/* Cart and Mobile Menu Toggle */}
-          <div className="flex items-center gap-4">
-            {/* Cart */}
-            <div className="relative">
-              <Link href="/cart" passHref>
-                <div className="bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
-                  <PiShoppingCartSimpleLight className="text-purple-900 text-2xl" aria-hidden="true" />
-                  <span className="bg-teal-500 text-white text-xs font-bold rounded-full px-2 py-1">2</span>
-                </div>
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="hidden md:flex items-center border border-gray-300 rounded-lg px-4 py-2 w-[400px]">
+            <input
+              type="text"
+              placeholder="Search for products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full outline-none px-3 py-2 text-gray-700 placeholder-gray-400 text-lg"
+            />
+            <button type="submit" className="bg-teal-500 text-white px-5 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 text-lg">
+              Search
+            </button>
+          </form>
+
+          {/* Contact & Cart */}
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center text-gray-700 cursor-pointer hover:text-purple-900 transition-colors">
+              <Link href="/contact">
+                <p className="font-bold text-lg">(808) 555-0111</p>
               </Link>
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <button onClick={() => setMobileMenuOpen(!isMobileMenuOpen)} className="sm:hidden text-purple-900 focus:outline-none" aria-expanded={isMobileMenuOpen} aria-label="Toggle Navigation Menu">
-              {isMobileMenuOpen ? <span className="text-2xl" aria-hidden="true">&times;</span> : <span className="text-2xl" aria-hidden="true">&#9776;</span>}
+            {/* Cart Icon with Dynamic Count ✅ */}
+            <Link href="/cart" className="relative">
+              <div className="bg-gray-200 px-5 py-3 rounded-lg flex items-center gap-2 cursor-pointer">
+                <PiShoppingCartSimpleLight className="text-purple-900 text-3xl" aria-hidden="true" />
+                {cartCount > 0 && (
+                  <span className="bg-teal-500 text-white text-sm font-bold rounded-full px-3 py-1">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+            </Link>
+
+            <button 
+              onClick={() => setMobileMenuOpen(!isMobileMenuOpen)} 
+              className="sm:hidden text-purple-900 focus:outline-none text-3xl" 
+              aria-expanded={isMobileMenuOpen} 
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMobileMenuOpen ? <span aria-hidden="true">&times;</span> : <span aria-hidden="true">&#9776;</span>}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Search Bar in Third Layer (Desktop Navigation) */}
-      <div className="py-4 border-b border-gray-300">
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          {/* Navigation Links */}
-          <nav className="hidden sm:flex flex-grow">
-            <ul className="flex space-x-6 text-gray-700 justify-start">
+      {/* Navigation */}
+      <div className="py-5 border-b border-gray-300">
+        <div className="container mx-auto px-6">
+          <nav className="hidden sm:flex items-center justify-center">
+            <ul className="flex items-center space-x-8 text-[18px] text-gray-800 tracking-wide">
               {navLinks.map(({ name, path }) => (
                 <li key={name}>
-                  <Link href={path} className={`hover:text-purple-900 transition-colors ${name === "Home" ? "text-teal-500 font-semibold" : ""}`}>{name}</Link>
+                  <Link href={path} className="py-3 px-4 hover:text-teal-600 font-semibold transition-colors">
+                    {name}
+                  </Link>
                 </li>
               ))}
+              <li>
+                <CategoryDropdown />
+              </li>
             </ul>
           </nav>
-
-          {/* Centered Search Bar and Contact Number */}
-          <div className="flex items-center justify-between flex-grow">
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="flex items-center border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-96 mx-auto">
-              <input
-                type="text"
-                placeholder="Search for products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full outline-none px-2 py-1 text-gray-700 placeholder-gray-400"
-              />
-              <button type="submit" className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200">Search</button>
-            </form>
-
-            {/* Contact Info */}
-            <div className="hidden md:flex items-center text-gray-700 cursor-pointer hover:text-purple-900 transition-colors ml-4">
-              <Link href="/contact">
-                <p className="font-bold text-sm">(808) 555-0111</p>
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Display Search Results */}
+      {/* Search Results Section */}
       {searchResults.length > 0 && (
         <div className="bg-white shadow-lg p-4 mt-4 absolute top-16 left-1/2 transform -translate-x-1/2 w-96 z-50">
           <ul>
@@ -161,9 +174,14 @@ const Header = () => {
           <ul className="space-y-2 px-6 text-gray-700">
             {navLinks.map(({ name, path }) => (
               <li key={name}>
-                <Link href={path} className="block hover:text-purple-900 transition-colors">{name}</Link>
+                <Link href={path} className="block py-2 px-3 hover:text-teal-600 transition-colors">
+                  {name}
+                </Link>
               </li>
             ))}
+            <li>
+              <CategoryDropdown />
+            </li>
           </ul>
         </nav>
       )}

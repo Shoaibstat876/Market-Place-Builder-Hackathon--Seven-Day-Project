@@ -1,6 +1,9 @@
+// src/components/sections/HeroSection.tsx
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { mockHeroSection } from "@/utils/mockHeroSection";
 
 const HeroSection = () => {
   return (
@@ -10,32 +13,29 @@ const HeroSection = () => {
         {/* Text Content */}
         <header className="lg:w-1/2 text-center lg:text-left px-6">
           <p className="text-sm text-gray-500 uppercase tracking-wide">
-            Welcome to Chairy
+            {mockHeroSection.tagline}
           </p>
           <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight">
-            Best Furniture Collection For Your Interior.
+            {mockHeroSection.heading}
           </h1>
-          <p className="mt-4 text-gray-600">
-            Discover our exclusive collection of furniture designed for comfort
-            and elegance.
-          </p>
+          <p className="mt-4 text-gray-600">{mockHeroSection.description}</p>
           {/* Button Navigation */}
           <Link
-            href="/products"
+            href={mockHeroSection.button.link}
             className="mt-6 inline-block px-6 py-3 bg-teal-500 text-white text-lg font-medium rounded-lg shadow hover:bg-teal-600 focus:ring-4 focus:ring-teal-300 focus:outline-none transition"
-            aria-label="Shop Now and Discover our Furniture"
+            aria-label={`Shop Now and Discover our Furniture`}
           >
-            Shop Now <span className="ml-2">→</span>
+            {mockHeroSection.button.text} <span className="ml-2">→</span>
           </Link>
         </header>
 
         {/* Image Section */}
         <div className="lg:w-1/2 flex justify-center">
           <Image
-            src="/assets/images/Product Image.png"
-            alt="Stylish and comfortable chair for home interiors."
-            width={600}
-            height={400}
+            src={mockHeroSection.image.src}
+            alt={mockHeroSection.image.alt}
+            width={mockHeroSection.image.width}
+            height={mockHeroSection.image.height}
             className="rounded-lg object-cover w-full"
             priority // Ensures faster loading for hero image
           />

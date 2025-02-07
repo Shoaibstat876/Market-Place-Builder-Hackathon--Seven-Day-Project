@@ -1,54 +1,50 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import ProductCard from "@/components/sections/ProductCard"; // Import ProductCard
+import { fetchFeaturedProducts, Product } from "@/utils/mockFeaturedProducts"; // Import mock API and Product interface
 
-// Sample product data
-const products = [
-  {
-    id: 1,
-    image: "/assets/images/Image-5.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "New",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium text-[#007580]",
-    cartColor: "bg-[#029fae] hover:bg-teal-700",
-    iconColor: "text-white",
-  },
-  {
-    id: 2,
-    image: "/assets/images/Image-6.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    badge: "Sale",
-    originalPrice: "$30",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 3,
-    image: "/assets/images/Image-8.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-  {
-    id: 4,
-    image: "/assets/images/Image-9.png",
-    name: "Library Stool Chair",
-    price: "$20",
-    priceStyle: "text-black font-medium",
-    nameStyle: "text-lg font-medium",
-    cartColor: "bg-[#f0f2f3] hover:bg-gray-600",
-    iconColor: "text-black",
-  },
-];
+const FeaturedProducts: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]); // State for featured products
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
 
-const FeaturedProducts = () => {
+  useEffect(() => {
+    const loadProducts = async (): Promise<void> => {
+      try {
+        setLoading(true);
+        const featuredProducts: Product[] = await fetchFeaturedProducts(); // Fetch products
+        setProducts(featuredProducts); // Update state with fetched products
+      } catch (error: unknown) {
+        // Type-safe error handling
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unknown error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-lg font-medium text-gray-600">Loading Featured Products...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-lg font-medium text-red-500">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <section className="py-10">
       <div className="container mx-auto px-4">
@@ -59,8 +55,11 @@ const FeaturedProducts = () => {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {products.map((product: Product) => (
+            <ProductCard
+              key={product.id}
+              product={product} // Pass the raw product object directly
+            />
           ))}
         </div>
       </div>
