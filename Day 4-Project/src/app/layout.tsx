@@ -1,7 +1,6 @@
-// File: src/app/layout.tsx
-
 import "../styles/globals.css";
 import { CartProvider } from "../context/CartContext";
+import { NotificationProvider } from "../context/NotificationContext"; // ✅ Added
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -14,11 +13,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <CartProvider>
-          <Header />
-          <main className="min-h-screen bg-gray-50" aria-label="Main Content">
-            {children}
-          </main>
-          <Footer />
+          <NotificationProvider> {/* ✅ Wrapped entire app inside NotificationProvider */}
+            <Header />
+            <main className="min-h-screen bg-gray-50" aria-label="Main Content">
+              {children}
+            </main>
+            <Footer />
+          </NotificationProvider>
         </CartProvider>
       </body>
     </html>

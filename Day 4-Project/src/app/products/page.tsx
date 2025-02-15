@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ProductCard from "@/components/sections/ProductCard";
-import { fetchAllProducts, Product } from "../../utils/mockProducts";
+import { fetchAllProducts, Product } from "../../utils/mockAllProducts";
 
 const ProductPage = () => {
   const productsPerPage = 4;

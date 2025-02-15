@@ -9,7 +9,7 @@ import {
   fetchAllProducts as fetchProducts,
   fetchProductById as fetchProductByIdFromProducts,
   fetchRelatedProducts as fetchRelatedProductsFromProducts,
-} from "./mockProducts";
+} from "./mockAllProducts";
 
 import {
   fetchAllCategories,

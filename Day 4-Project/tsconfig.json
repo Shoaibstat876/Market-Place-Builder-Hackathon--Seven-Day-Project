@@ -30,6 +30,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/sanity/importFeaturedProducts.js"  ],
   "exclude": ["node_modules"]
 }

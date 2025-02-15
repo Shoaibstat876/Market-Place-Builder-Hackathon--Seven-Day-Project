@@ -14,6 +14,7 @@ const CartPage: React.FC = () => {
   // ✅ Fix: Ensure localStorage is used only after hydration
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -33,11 +34,13 @@ const CartPage: React.FC = () => {
   const handleAddToWishlist = (id: number) => {
     if (!wishlist.includes(id)) {
       saveWishlist([...wishlist, id]);
+      setNotification("Item added to wishlist!");
     }
   };
 
   const handleRemoveFromWishlist = (id: number) => {
     saveWishlist(wishlist.filter(itemId => itemId !== id));
+    setNotification("Item removed from wishlist.");
   };
 
   const handleQuantityChange = (id: number, value: number) => {
@@ -45,8 +48,28 @@ const CartPage: React.FC = () => {
     const existingItem = cartItems.find(item => item.id === id);
     if (existingItem) {
       addToCart({ ...existingItem, quantity: value });
+      setNotification("Quantity updated.");
     }
   };
+
+  const handleRemoveFromCart = (id: number) => {
+    removeFromCart(id);
+    setNotification("Item removed from cart.");
+  };
+
+  const clearNotification = () => {
+    setNotification(null);
+  };
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 5000); // Dismiss after 5 seconds
+
+      return () => clearTimeout(timer); // Clean up the timer on notification change
+    }
+  }, [notification]);
 
   if (cartItems.length === 0) {
     return (
@@ -73,6 +96,16 @@ const CartPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-16 px-4 lg:px-8">
+      {/* Notification */}
+      {notification && (
+        <div className="bg-teal-500 text-white p-4 mb-6 rounded-md">
+          <p>{notification}</p>
+          <button onClick={clearNotification} className="text-white ml-4">
+            ✖
+          </button>
+        </div>
+      )}
+
       <h2 className="text-3xl font-bold text-gray-800 mb-8">Your Cart</h2>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Cart Items */}
@@ -125,7 +158,7 @@ const CartPage: React.FC = () => {
                 </button>
                 <Button
                   label="Remove"
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => handleRemoveFromCart(item.id)}
                   color="teal"
                   size="small"
                 />
@@ -160,7 +193,7 @@ const CartPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ✅ Restored Wishlist Section */}
+      {/* Restored Wishlist Section */}
       {wishlist.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Wishlist</h2>
@@ -173,7 +206,6 @@ const CartPage: React.FC = () => {
                     key={item.id}
                     className="relative border p-4 rounded-lg shadow-md bg-white flex flex-col items-center"
                   >
-                    {/* Remove from Wishlist Button */}
                     <button
                       onClick={() => handleRemoveFromWishlist(item.id)}
                       className="absolute top-2 right-2 text-gray-600 hover:text-red-600 transition-colors"

@@ -42,6 +42,7 @@ const Header = () => {
     { name: "Contact", path: "/contact" },
     { name: "FAQs", path: "/faq" },
     { name: "Terms & Conditions", path: "/terms" },
+    { name: "Studio", path: "/studio" } // Added Studio link
   ];
 
   const handleSearch = async (event: React.FormEvent) => {

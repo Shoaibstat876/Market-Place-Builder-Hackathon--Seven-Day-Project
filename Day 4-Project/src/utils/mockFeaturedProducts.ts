@@ -39,7 +39,7 @@ const mockFeaturedProducts: Product[] = [
     name: "Galaxy Sofa",
     price: 499.99,
     description: "A luxurious sofa with a modern touch.",
-    category: "furniture",
+    category: "sofas",
     badge: "New",
     nameStyle: "text-lg font-[400] text-[#007580]",
     priceStyle: "text-[#000000] font-[400]",
