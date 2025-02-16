@@ -1,9 +1,14 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import Image from "next/image";
 import { PiShoppingCartSimpleLight } from "react-icons/pi";
 import { useCart } from "../../context/CartContext";
 import Link from "next/link";
+// Import the components
+import RatingSystem from "../sections/RatingSystem";
+import CustomReviewInput from "../sections/CustomReviewInput";
+
+
 
 interface Product {
   id: number;
@@ -86,6 +91,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const priceKey = `product-price-${product.id}`;
   const cartKey = `product-cart-${product.id}`;
 
+// Start: Reviews & Rating Section
+  // This section is where we handle the rating system, predefined reviews, and custom reviews.
+
+  const [rating, setRating] = useState<number>(0);
+ const [customReview, setCustomReview] = useState<string>("");
+ const handleRatingChange = (newRating: number) => setRating(newRating);
+ const handleCustomReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    setCustomReview(e.target.value);
+
+  // Review Section
+
+
   return (
     <div className="rounded-lg bg-white shadow-sm hover:shadow-md transition-transform transform hover:scale-105 flex flex-col min-h-[440px] p-6">
       {/* Product Image */}
@@ -156,6 +173,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
           </button>
         </div>
+        {/* Reviews & Rating Section */}
+        <div className="mt-6">
+          <RatingSystem rating={rating} onRatingChange={handleRatingChange} />
+         
+          <CustomReviewInput customReview={customReview} onReviewChange={handleCustomReviewChange} />
+        </div>
+       
 
         {/* View Details Link */}
         <Link
