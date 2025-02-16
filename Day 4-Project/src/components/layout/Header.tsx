@@ -7,6 +7,8 @@ import Image from "next/image";
 import { PiShoppingCartSimpleLight } from "react-icons/pi";
 import { useCart } from "../../context/CartContext"; // ✅ Import Cart Context
 import CategoryDropdown from "../shared/CategoryDropdown";
+import { useTranslation } from "react-i18next"; // ✅ Add this line
+import LanguageSwitcher from "../sections/LanguageSwitcher";
 
 interface Product {
   id: string;
@@ -26,6 +28,8 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [cartCount, setCartCount] = useState(0);
 
+
+  const { t } = useTranslation(); // ✅ Initialize translation hook
   // ✅ Get cart items from CartContext
   const { cartItems } = useCart();
 
@@ -34,16 +38,16 @@ const Header = () => {
     setCartCount(cartItems.reduce((total, item) => total + item.quantity, 0));
   }, [cartItems]);
 
-  const navLinks: NavLink[] = [
-    { name: "Home", path: "/" },
-    { name: "Shop", path: "/products" },
-    { name: "Trend", path: "/trend" }, 
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
-    { name: "FAQs", path: "/faq" },
-    { name: "Terms & Conditions", path: "/terms" },
-    { name: "Studio", path: "/studio" } // Added Studio link
-  ];
+const navLinks: NavLink[] = [
+  { name: t("Home"), path: "/" },
+  { name: t("Shop"), path: "/products" },
+  { name: t("Trend"), path: "/trend" }, 
+  { name: t("About Us"), path: "/about" },
+  { name: t("Contact"), path: "/contact" },
+  { name: t("FAQs"), path: "/faq" },
+  { name: t("Terms & Conditions"), path: "/terms" },
+  { name: t("Profile"), path: "/userProfile" },
+];
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -60,51 +64,63 @@ const Header = () => {
 
   return (
     <header>
-      {/* Top Bar */}
-      <div className="bg-[#272343] font-bold text-white text-sm py-2">
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          <p className="text-white">✔ Free Shipping On All Orders Over $50</p>
-          <div className="hidden sm:flex items-center space-x-6">
-            <button className="hover:text-gray-300 transition-colors" aria-label="Select Language">
-              Eng ▾
-            </button>
-            <Link href="/faq" className="hover:text-gray-300 transition-colors">FAQs</Link>
-            <div className="flex items-center gap-2 hover:text-gray-300 transition-colors">
-              <div className="bg-white text-purple-900 rounded-full h-6 w-6 flex items-center justify-center" aria-hidden="true">!</div>
-              <p>Need Help</p>
-            </div>
-          </div>
-        </div>
+    {/* Top Bar */}
+<div className="bg-[#272343] font-bold text-white text-sm py-2">
+  <div className="container mx-auto px-6 flex justify-between items-center">
+    
+    {/* Free Shipping Message */}
+    <p className="text-white">✔ {t("Free Shipping")}</p>
+
+    {/* Right Side: Language Switcher, FAQs, Help */}
+    <div className="hidden sm:flex items-center space-x-6">
+      
+      {/* Language Switcher ✅ */}
+      <LanguageSwitcher /> 
+
+      {/* FAQs Link */}
+      <Link href="/faq" className="hover:text-gray-300 transition-colors">
+        {t("FAQs")}
+      </Link>
+
+        {/* Need Help Section ✅ */}
+        <div className="flex items-center gap-2 hover:text-gray-300 transition-colors">
+        <div className="bg-white text-purple-900 rounded-full h-6 w-6 flex items-center justify-center" aria-hidden="true">!</div>
+        <p>{t("Need Help?")}</p>
       </div>
 
-      {/* Main Header */}
-      <div className="bg-gray-100 py-5 shadow-sm">
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-4">
-            <Image src="/assets/images/Logo Icon-1.png" alt="Comforty Logo" width={50} height={50} className="rounded-full" priority />
-            <h1 className="text-3xl font-bold text-black">Comforty</h1>
-          </Link>
+    </div>
+  </div>
+</div>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex items-center border border-gray-300 rounded-lg px-4 py-2 w-[400px]">
-            <input
-              type="text"
-              placeholder="Search for products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full outline-none px-3 py-2 text-gray-700 placeholder-gray-400 text-lg"
-            />
-            <button type="submit" className="bg-teal-500 text-white px-5 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 text-lg">
-              Search
-            </button>
-          </form>
+
+   {/* Main Header */}
+<div className="bg-gray-100 py-5 shadow-sm">
+  <div className="container mx-auto px-6 flex justify-between items-center">
+    {/* Logo ✅ */}
+    <Link href="/" className="flex items-center gap-4">
+      <Image src="/assets/images/Logo Icon-1.png" alt="Comforty Logo" width={50} height={50} className="rounded-full" priority />
+      <h1 className="text-3xl font-bold text-black">{t("Logo")}</h1>
+    </Link>
+
+         {/* Search Bar ✅ */}
+    <form onSubmit={handleSearch} className="hidden md:flex items-center border border-gray-300 rounded-lg px-4 py-2 w-[400px]">
+      <input
+        type="text"
+        placeholder={t("Search Placeholder")}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full outline-none px-3 py-2 text-gray-700 placeholder-gray-400 text-lg"
+      />
+             <button type="submit" className="bg-teal-500 text-white px-5 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 text-lg">
+        {t("Search")}
+      </button>
+    </form>
 
           {/* Contact & Cart */}
           <div className="flex items-center gap-6">
             <div className="hidden md:flex items-center text-gray-700 cursor-pointer hover:text-purple-900 transition-colors">
               <Link href="/contact">
-                <p className="font-bold text-lg">(808) 555-0111</p>
+              <p className="font-bold text-lg">{t("Contact Number")}</p>
               </Link>
             </div>
 
