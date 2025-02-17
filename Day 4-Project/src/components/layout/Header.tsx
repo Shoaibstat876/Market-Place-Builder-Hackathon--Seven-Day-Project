@@ -1,7 +1,7 @@
 // File: src/components/layout/Header.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { PiShoppingCartSimpleLight } from "react-icons/pi";
@@ -26,6 +26,9 @@ const Header = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // ✅ State to control dropdown
+  const searchRef = useRef<HTMLDivElement>(null); // ✅ Reference for outside click detection
+
   const [cartCount, setCartCount] = useState(0);
 
 
@@ -56,11 +59,25 @@ const navLinks: NavLink[] = [
         const response = await fetch(`/api/search?query=${searchQuery}`);
         const data = await response.json();
         setSearchResults(data);
+        setIsDropdownOpen(true); // ✅ Show dropdown when results are available
       } catch (error) {
         console.error("Error fetching search results:", error);
       }
     }
   };
+
+  // ✅ Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header>
@@ -103,18 +120,46 @@ const navLinks: NavLink[] = [
     </Link>
 
          {/* Search Bar ✅ */}
-    <form onSubmit={handleSearch} className="hidden md:flex items-center border border-gray-300 rounded-lg px-4 py-2 w-[400px]">
-      <input
-        type="text"
-        placeholder={t("Search Placeholder")}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full outline-none px-3 py-2 text-gray-700 placeholder-gray-400 text-lg"
-      />
-             <button type="submit" className="bg-teal-500 text-white px-5 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 text-lg">
-        {t("Search")}
-      </button>
-    </form>
+         <div className="relative w-[400px]" ref={searchRef}>
+            <form onSubmit={handleSearch} className="hidden md:flex items-center border border-gray-300 rounded-lg px-4 py-2 w-full">
+              <input
+                type="text"
+                placeholder={t("Search Placeholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full outline-none px-3 py-2 text-gray-700 placeholder-gray-400 text-lg"
+                onFocus={() => setIsDropdownOpen(true)} // ✅ Show dropdown when focused
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") setIsDropdownOpen(false); // ✅ Close dropdown on Enter
+                }}
+              />
+              <button type="submit" className="bg-teal-500 text-white px-5 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 text-lg">
+                {t("Search")}
+              </button>
+            </form>
+
+             {/* Search Results Dropdown */}
+             {isDropdownOpen && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 w-full bg-white shadow-lg p-4 mt-2 rounded-lg z-50">
+                <ul>
+                  {searchResults.map((product) => (
+                    <li key={product.id} className="flex items-center space-x-4 py-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => {
+                        setSearchQuery(""); // ✅ Clear search input
+                        setIsDropdownOpen(false); // ✅ Close dropdown
+                      }}
+                    >
+                      <Image src={product.image} alt={product.name} width={50} height={50} className="rounded-md object-cover" />
+                      <div>
+                        <Link href={`/product/${product.id}`} className="text-teal-500 font-semibold">{product.name}</Link>
+                        <p className="text-gray-600">${product.price}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
 
           {/* Contact & Cart */}
           <div className="flex items-center gap-6">
@@ -168,22 +213,6 @@ const navLinks: NavLink[] = [
         </div>
       </div>
 
-      {/* Search Results Section */}
-      {searchResults.length > 0 && (
-        <div className="bg-white shadow-lg p-4 mt-4 absolute top-16 left-1/2 transform -translate-x-1/2 w-96 z-50">
-          <ul>
-            {searchResults.map((product: Product) => (
-              <li key={product.id} className="flex items-center space-x-4 py-2">
-                <Image src={product.image} alt={product.name} width={50} height={50} className="rounded-md object-cover" />
-                <div>
-                  <Link href={`/product/${product.id}`} className="text-teal-500 font-semibold">{product.name}</Link>
-                  <p className="text-gray-600">${product.price}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
